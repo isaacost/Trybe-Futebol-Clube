@@ -6,9 +6,6 @@ import { Model } from 'sequelize';
 
 import { app } from '../app';
 import TeamModel from '../database/models/TeamModel';
-import TeamService from '../services/teams.service';
-
-import { Response } from 'superagent';
 
 chai.use(chaiHttp);
 
@@ -45,29 +42,6 @@ describe('Testa endpoint /teams', () => {
       teamName: 'Botafogo'
     }
   ]
-
-  // before(async () => {
-  //   sinon
-  //     .stub(TeamModel, "findAll")
-  //     .resolves([
-  //       {
-  //           id: 1,
-  //           teamName: 'Avaí/Kindermann',
-  //         },
-  //         {
-  //           id: 2,
-  //           teamName: 'Bahia',
-  //         },
-  //         {
-  //           id: 3,
-  //           teamName: 'Botafogo',
-  //         },
-  //     ] as TeamModel[]);
-  // });
-
-  // after(()=>{
-  //   (TeamModel.findAll as sinon.SinonStub).restore();
-  // })
 
   it('testa get teams', async () => {
    sinon.stub(Model, 'findAll').resolves(TeamsList);
