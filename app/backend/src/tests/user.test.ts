@@ -102,4 +102,14 @@ describe('Testa endpoint /login', () => {
     expect(result.status).to.be.equal(401);
     expect(result.body).to.deep.equal({ message: 'Invalid email or password'})
   });
+  it('Testa user login se o token não é encontrado', async () => {
+    const body = { email: 'email', password: '123'}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).get('/login/role');
+
+    expect(result.status).to.be.equal(401);
+    expect(result.body).to.deep.equal({ message: 'Token not found'})   
+  });
 });
