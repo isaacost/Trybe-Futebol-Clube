@@ -1,19 +1,22 @@
 import * as express from 'express';
-import TeamRoute from './routes/teams.route';
+import router from './routes';
 
 class App {
   public app: express.Express;
-  private _teamsRoutes: TeamRoute = new TeamRoute();
 
   constructor() {
     this.app = express();
 
     this.config();
 
-    this._routes();
+    this.routes();
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
+  }
+
+  private routes(): void {
+    this.app.use(router);
   }
 
   private config():void {
@@ -26,18 +29,20 @@ class App {
 
     this.app.use(express.json());
     this.app.use(accessControl);
+    this.app.use((
+      err: Error,
+      _req: express.Request,
+      res: express.Response,
+      _next: express.NextFunction,
+    ) => {
+      res.status(500).json(err.message);
+    });
   }
 
   public start(PORT: string | number):void {
     this.app.listen(PORT, () => console.log(`Running on port ${PORT}`));
   }
-
-  private _routes():void {
-    this.app.use('/teams', this._teamsRoutes.route);
-  }
 }
-
 export { App };
-
 // Essa segunda exportação é estratégica, e a execução dos testes de cobertura depende dela
 export const { app } = new App();

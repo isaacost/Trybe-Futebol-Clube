@@ -1,17 +1,20 @@
 import { ModelStatic } from 'sequelize';
-import ITeam from '../interfaces/ITeam';
-import TeamModel from '../database/models/TeamModel';
+import Team from '../database/models/TeamModel';
+import IResponse from '../interfaces/IResponse';
+import { grResponse } from '../utils/grResponse';
 
-export default class TeamService {
-  private _model: ModelStatic<TeamModel> = TeamModel;
+class TeamService {
+  private model: ModelStatic<Team> = Team;
 
-  public async findAll(): Promise<ITeam[]> {
-    const teams = await this._model.findAll();
-    return teams as ITeam[];
+  async get(): Promise<IResponse> {
+    const teams = await this.model.findAll();
+    return grResponse(200, teams);
   }
 
-  public async getById(id: number): Promise<ITeam> {
-    const teams = await this._model.findByPk(id);
-    return teams as ITeam;
+  async getById(id: number): Promise<IResponse> {
+    const teams = await this.model.findByPk(id);
+    return grResponse(200, teams);
   }
 }
+
+export default TeamService;
