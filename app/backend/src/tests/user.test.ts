@@ -36,7 +36,7 @@ describe('Testa endpoint /login', () => {
     }
   ]
 
-  it('Testa user login', async () => {
+  it('Testa user login válido', async () => {
     const body = { email: 'email@email.com', password: 'password'}
     sinon.stub(Model, 'findAll').resolves([userList[0]]);
     sinon.stub(bcrypt, 'compareSync').resolves(true);
@@ -46,5 +46,60 @@ describe('Testa endpoint /login', () => {
     expect(result.status).to.be.equal(200);
     expect(result.body).to.haveOwnProperty('token')
 
+  });
+
+  it('Testa user login sem password', async () => {
+    const body = { email: 'email@email.com', password: ''}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).post('/login').send(body);
+
+    expect(result.status).to.be.equal(400);
+    expect(result.body).to.deep.equal({ message: 'All fields must be filled'})
+  });
+
+  it('Testa user login sem email', async () => {
+    const body = { email: '', password: 'password'}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).post('/login').send(body);
+
+    expect(result.status).to.be.equal(400);
+    expect(result.body).to.deep.equal({ message: 'All fields must be filled'})
+  });
+
+  it('Testa user login com email invalido', async () => {
+    const body = { email: 'email', password: 'password'}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).post('/login').send(body);
+
+    expect(result.status).to.be.equal(401);
+    expect(result.body).to.deep.equal({ message: 'Invalid email or password'})
+  });
+
+
+  it('Testa user login com password invalida', async () => {
+    const body = { email: 'email@email.com', password: '123'}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).post('/login').send(body);
+
+    expect(result.status).to.be.equal(401);
+    expect(result.body).to.deep.equal({ message: 'Invalid email or password'})
+  });
+  it('Testa user login com email e password invalidas', async () => {
+    const body = { email: 'email', password: '123'}
+    sinon.stub(Model, 'findAll').resolves([userList[0]]);
+    sinon.stub(bcrypt, 'compareSync').resolves(true);
+
+    const result = await chai.request(app).post('/login').send(body);
+
+    expect(result.status).to.be.equal(401);
+    expect(result.body).to.deep.equal({ message: 'Invalid email or password'})
   });
 });
