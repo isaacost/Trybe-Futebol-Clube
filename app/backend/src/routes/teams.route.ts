@@ -14,5 +14,8 @@ export default class TeamRoute {
     this.route.get('/', (req: Request, res: Response) => {
       this._controller.findAll(req, res);
     });
+    this.route.get('/:id', (req: Request, res: Response) => {
+      this._controller.getById(req, res);
+    });
   }
 }
