@@ -1,12 +1,16 @@
 import * as express from 'express';
+import TeamRoute from './routes/teams.route';
 
 class App {
   public app: express.Express;
+  private _teamsRoutes: TeamRoute = new TeamRoute();
 
   constructor() {
     this.app = express();
 
     this.config();
+
+    this._routes();
 
     // Não remover essa rota
     this.app.get('/', (req, res) => res.json({ ok: true }));
@@ -26,6 +30,10 @@ class App {
 
   public start(PORT: string | number):void {
     this.app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+  }
+
+  private _routes():void {
+    this.app.use('/teams', this._teamsRoutes.route);
   }
 }
 
