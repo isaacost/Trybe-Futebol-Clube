@@ -14,4 +14,10 @@ matcheRoutes.patch(
   matcheController.finished.bind(matcheController),
 );
 
+matcheRoutes.patch(
+  '/matches/:id',
+  verificaToken,
+  matcheController.update.bind(matcheController),
+);
+
 export default matcheRoutes;

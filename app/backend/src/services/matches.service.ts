@@ -3,6 +3,7 @@ import IResponse from '../interfaces/IResponse';
 import { grResponse } from '../utils/grResponse';
 import Matche from '../database/models/MatcheModel';
 import Team from '../database/models/TeamModel';
+import IMatches from '../interfaces/IMatches';
 
 class MatcheService {
   private _model: ModelStatic<Matche> = Matche;
@@ -29,6 +30,11 @@ class MatcheService {
   async finished(id: number): Promise<IResponse> {
     await this._model.update({ inProgress: false }, { where: { id } });
     return grResponse(200, { message: 'Finished' });
+  }
+
+  async update(id: number, body:IMatches): Promise<IResponse> {
+    await this._model.update({ ...body }, { where: { id } });
+    return grResponse(200, { message: 'updated' });
   }
 }
 

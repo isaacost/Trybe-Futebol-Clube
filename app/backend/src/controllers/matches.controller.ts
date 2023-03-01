@@ -23,6 +23,16 @@ class MatcheController {
       next(err);
     }
   }
+
+  async update(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { status, message } = await this._service.update(Number(id), req.body);
+      res.status(status).json(message);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default MatcheController;
