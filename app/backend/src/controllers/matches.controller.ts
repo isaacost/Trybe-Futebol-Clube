@@ -13,6 +13,16 @@ class MatcheController {
       next(err);
     }
   }
+
+  async finished(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { status, message } = await this._service.finished(Number(id));
+      res.status(status).json(message);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default MatcheController;

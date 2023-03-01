@@ -25,6 +25,11 @@ class MatcheService {
 
     return grResponse(200, matches);
   }
+
+  async finished(id: number): Promise<IResponse> {
+    await this._model.update({ inProgress: false }, { where: { id } });
+    return grResponse(200, { message: 'Finished' });
+  }
 }
 
 export default MatcheService;
