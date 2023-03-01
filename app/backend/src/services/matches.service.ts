@@ -7,7 +7,7 @@ import Team from '../database/models/TeamModel';
 class MatcheService {
   private _model: ModelStatic<Matche> = Matche;
 
-  async get(inProgress: string): Promise<IResponse> {
+  async getAll(inProgress: string): Promise<IResponse> {
     const matches = await this._model.findAll({
       include: [
         { model: Team, as: 'homeTeam', attributes: ['teamName'] },
