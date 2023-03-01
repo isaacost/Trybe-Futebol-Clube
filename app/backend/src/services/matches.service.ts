@@ -3,7 +3,8 @@ import IResponse from '../interfaces/IResponse';
 import { grResponse } from '../utils/grResponse';
 import Matche from '../database/models/MatcheModel';
 import Team from '../database/models/TeamModel';
-import IMatches from '../interfaces/IMatches';
+import IMatchesUpdate from '../interfaces/IMatchesUpdate';
+import IMatche from '../interfaces/IMatche';
 
 class MatcheService {
   private _model: ModelStatic<Matche> = Matche;
@@ -32,9 +33,17 @@ class MatcheService {
     return grResponse(200, { message: 'Finished' });
   }
 
-  async update(id: number, body:IMatches): Promise<IResponse> {
-    await this._model.update({ ...body }, { where: { id } });
+  async update(id: number, body:IMatchesUpdate): Promise<IResponse> {
+    const matche = await this._model.findByPk(id);
+    if (matche?.inProgress) {
+      await this._model.update({ ...body }, { where: { id } });
+    }
     return grResponse(200, { message: 'updated' });
+  }
+
+  async create(body: IMatche): Promise<IResponse> {
+    const created = await this._model.create({ ...body });
+    return grResponse(201, created);
   }
 }
 
