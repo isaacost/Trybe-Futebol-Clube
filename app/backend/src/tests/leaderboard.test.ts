@@ -41,7 +41,7 @@ describe('Testa endpoint /leaderboard', () => {
     }),
   ];
 
-  const returnResult = [
+  const returnResultHome = [
     {
         name: 'Bahia',
         totalPoints: 0,
@@ -56,6 +56,21 @@ describe('Testa endpoint /leaderboard', () => {
       },
   ];
 
+  const returnResultAway = [
+    {
+      name: 'Bahia',
+      totalPoints: 1,
+      totalGames: 1,
+      totalVictories: 0,
+      totalDraws: 1,
+      totalLosses: 0,
+      goalsFavor: 0,
+      goalsOwn: 0,
+      goalsBalance: 0,
+      efficiency: 33.33
+    },
+  ];
+
   it('Testa get leaderboard home', async () => {
     sinon
       .stub(Model, 'findAll')
@@ -67,6 +82,20 @@ describe('Testa endpoint /leaderboard', () => {
     const result = await chai.request(app).get('/leaderboard/home');
 
     expect(result.status).to.be.equal(200);
-    expect(result.body).to.deep.equal(returnResult);
+    expect(result.body).to.deep.equal(returnResultHome);
+  });
+
+  it('Testa get leaderboard away', async () => {
+    sinon
+      .stub(Model, 'findAll')
+      .onFirstCall()
+      .resolves(teamList)
+      .onSecondCall()
+      .resolves(matcheList);
+
+    const result = await chai.request(app).get('/leaderboard/away');
+
+    expect(result.status).to.be.equal(200);    
+    expect(result.body).to.deep.equal(returnResultAway);
   });
 });
