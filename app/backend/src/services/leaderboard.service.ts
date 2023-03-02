@@ -4,37 +4,7 @@ import { grResponse } from '../utils/grResponse';
 import Matche from '../database/models/MatcheModel';
 import Team from '../database/models/TeamModel';
 import ILeaderboard from '../interfaces/ILeaderboard';
-
-const count = (string: string, arr: string[]) => {
-  let soma = 0;
-  arr.forEach((e) => {
-    if (e === string) soma += 1;
-  });
-  return soma;
-};
-
-const grResults = (matches: Matche[]) =>
-  matches.map((e) => {
-    if (e.homeTeamGoals > e.awayTeamGoals) return 'victory';
-    if (e.homeTeamGoals === e.awayTeamGoals) return 'draw';
-    return 'lose';
-  }) as string[];
-
-const rank = (e: Team, results: string[], matchesByTeam: Matche[]) => {
-  const goalsFavor = matchesByTeam.reduce((a, c) => a + c.homeTeamGoals, 0);
-  const goalsOwn = matchesByTeam.reduce((a, c) => a + c.awayTeamGoals, 0);
-
-  return {
-    name: e.teamName,
-    totalPoints: count('victory', results) * 3 + count('draw', results),
-    totalGames: results.length,
-    totalVictories: count('victory', results),
-    totalDraws: count('draw', results),
-    totalLosses: count('lose', results),
-    goalsFavor,
-    goalsOwn,
-  };
-};
+import { rank, grResults, orderRank } from '../utils/leaderboardFunctions';
 
 class LeaderboardService {
   private _matche: ModelStatic<Matche> = Matche;
@@ -48,11 +18,11 @@ class LeaderboardService {
 
     teams.forEach((e) => {
       const matchesByTeam = matches.filter((el) => el.homeTeamId === e.id);
-      const results = grResults(matchesByTeam);
+      const results = grResults(matchesByTeam, ['homeTeamGoals', 'awayTeamGoals']);
 
-      result.push(rank(e, results, matchesByTeam));
+      result.push(rank(e, results, matchesByTeam, ['homeTeamGoals', 'awayTeamGoals']));
     });
-    return grResponse(200, result);
+    return grResponse(200, orderRank(result));
   }
 }
 
