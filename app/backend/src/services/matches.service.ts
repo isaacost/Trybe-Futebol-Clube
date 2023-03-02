@@ -1,6 +1,6 @@
 import { ModelStatic } from 'sequelize';
 import IResponse from '../interfaces/IResponse';
-import { grResponse } from '../utils/grResponse';
+import { grResponse, grResponseErr } from '../utils/grResponse';
 import Matche from '../database/models/MatcheModel';
 import Team from '../database/models/TeamModel';
 import IMatchesUpdate from '../interfaces/IMatchesUpdate';
@@ -42,6 +42,17 @@ class MatcheService {
   }
 
   async create(body: IMatche): Promise<IResponse> {
+    if (body.awayTeamId === body.homeTeamId) {
+      return grResponseErr(422, 'It is not possible to create a match with two equal teams');
+    }
+
+    const team1 = await this._model.findByPk(body.awayTeamId);
+    const team2 = await this._model.findByPk(body.homeTeamId);
+
+    if (!team1 || !team2) {
+      return grResponseErr(404, 'There is no team with such id!');
+    }
+
     const created = await this._model.create({ ...body });
     return grResponse(201, created);
   }

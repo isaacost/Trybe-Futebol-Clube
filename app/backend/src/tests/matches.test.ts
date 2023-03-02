@@ -125,7 +125,7 @@ const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoxLCJl
     expect(result.body).to.deep.equal({ message: 'Finished' });
   });
 
-  it('Testa create do matche', async () => {
+  it('Testa create', async () => {
     sinon.stub(Model, 'create').resolves(matcheList[1]);
 
     const result = await chai.request(app).post('/matches').send(createMatche).set({ Authorization: `${ token }`});
@@ -134,4 +134,22 @@ const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoxLCJl
     expect(result.body).to.deep.equal(matcheListControl[1]);
   });
 
+  it('Testa create para dois times iguais', async () => {
+    sinon.stub(Model, 'create').resolves(matcheList[1]);
+
+    const result = await chai.request(app).post('/matches').send(createMatcheErr).set({ Authorization: `${ token }`});
+
+    expect(result.status).to.be.equal(422);
+    expect(result.body).to.deep.equal({ message: 'It is not possible to create a match with two equal teams' });
+  });
+
+  it('Testa create 1 ou 2 id não exista', async () => {
+    sinon.stub(Model, 'findByPk').resolves(null);
+    sinon.stub(Model, 'create').resolves(matcheList[1]);
+
+    const result = await chai.request(app).post('/matches').send(createMatche).set({ Authorization: `${ token }`});
+
+    expect(result.status).to.be.equal(404);
+    expect(result.body).to.deep.equal({ message: 'There is no team with such id!' });
+  });
 });

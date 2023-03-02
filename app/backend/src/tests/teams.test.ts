@@ -54,6 +54,7 @@ describe('Testa endpoint /teams', () => {
   });
   
   it('testa get teams/:id', async () => {
+    sinon.restore();
     sinon.stub(Model, 'findByPk').resolves(TeamsList[0]);
 
     const result = await chai.request(app).get('/teams/1'); 
