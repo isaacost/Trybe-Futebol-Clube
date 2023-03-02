@@ -4,7 +4,8 @@ import { grResponse } from '../utils/grResponse';
 import Matche from '../database/models/MatcheModel';
 import Team from '../database/models/TeamModel';
 import ILeaderboard from '../interfaces/ILeaderboard';
-import { rank, grResults, orderRank } from '../utils/leaderboardFunctions';
+import { rank, grResults, orderRank,
+  grResultsGeneral, rankGeneral } from '../utils/leaderboardFunctions';
 
 class LeaderboardService {
   private _matche: ModelStatic<Matche> = Matche;
@@ -36,6 +37,23 @@ class LeaderboardService {
       const results = grResults(matchesByTeam, ['awayTeamGoals', 'homeTeamGoals']);
 
       result.push(rank(e, results, matchesByTeam, ['awayTeamGoals', 'homeTeamGoals']));
+    });
+    return grResponse(200, orderRank(result));
+  }
+
+  async rankGeral(): Promise<IResponse> {
+    const teams = await this._team.findAll();
+    const matches = await this._matche.findAll({ where: { inProgress: false } });
+
+    const result: ILeaderboard[] = [];
+
+    teams.forEach((e) => {
+      const matchesByTeam = matches.filter(
+        (el) => el.awayTeamId === e.id || el.homeTeamId === e.id,
+      );
+      const results = grResultsGeneral(e.id, matchesByTeam);
+
+      result.push(rankGeneral(e, results, matchesByTeam));
     });
     return grResponse(200, orderRank(result));
   }

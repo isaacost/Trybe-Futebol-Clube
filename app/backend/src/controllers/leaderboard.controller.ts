@@ -21,6 +21,15 @@ class LeaderboardController {
       next(err);
     }
   }
+
+  async rank(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const { status, message } = await this._service.rankGeral();
+      res.status(status).json(message);
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 export default LeaderboardController;
