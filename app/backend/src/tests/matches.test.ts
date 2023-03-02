@@ -15,6 +15,8 @@ const { expect } = chai;
 describe('Testa endpoint /matches', () => {
   beforeEach(sinon.restore);
 
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjoxLCJlbWFpbCI6ImFkbWluQGFkbWluLmNvbSIsInJvbGUiOiJhZG1pbiIsInVzZXJuYW1lIjoiQWRtaW4ifSwiaWF0IjoxNjc3NzYzODg0LCJleHAiOjE2Nzg2Mjc4ODR9.e5GVmFHZ9ZWiZ5Lc7kMNhXZjEu_DqnuMMwjRotatThY";
+
   const matcheList = [
     new Matche({
       id: 1,
@@ -52,6 +54,22 @@ describe('Testa endpoint /matches', () => {
       inProgress: false
     }
   ]
+
+  const createMatche = {
+    homeTeamId: 1,
+    homeTeamGoals: 1,
+    awayTeamId: 2,
+    awayTeamGoals: 2,
+    inProgress: true,
+  };
+
+  const createMatcheErr = {
+    homeTeamId: 1,
+    homeTeamGoals: 1,
+    awayTeamId: 1,
+    awayTeamGoals: 2,
+    inProgress: true,
+  };
 
   it('Testa get', async () => {
     sinon.stub(Model, 'findAll').resolves(matcheList);
@@ -98,13 +116,22 @@ describe('Testa endpoint /matches', () => {
     expect(result.body).to.deep.equal({ message: 'Token must be a valid token' });
   });
 
-//   it('Testa finish com token valido', async () => {
-//     sinon.stub(Model, 'update').resolves();
+  it('Testa finish com token valido', async () => {
+    sinon.stub(Model, 'update').resolves();
+   
+    const result = await chai.request(app).patch('/matches/1/finish').set({ Authorization: `${ token }`});
 
-//     const result = await chai.request(app).patch('/matches/1/finish').set('Authorization','(colocar o token aqui)');
+    expect(result.status).to.be.equal(200);
+    expect(result.body).to.deep.equal({ message: 'Finished' });
+  });
 
-//     expect(result.status).to.be.equal(200);
-//     expect(result.body).to.deep.equal({ message: 'Finished' });
-//   });
+  it('Testa create do matche', async () => {
+    sinon.stub(Model, 'create').resolves(matcheList[1]);
+
+    const result = await chai.request(app).post('/matches').send(createMatche).set({ Authorization: `${ token }`});
+
+    expect(result.status).to.be.equal(201);
+    expect(result.body).to.deep.equal(matcheListControl[1]);
+  });
 
 });
